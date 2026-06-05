@@ -7,11 +7,17 @@ protocol MenuBarControlling: AnyObject {
     func start()
 }
 
+@MainActor
+protocol SettingsOpening: AnyObject {
+    func openSettings()
+}
+
 extension MenuBarController: MenuBarControlling {}
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let menuBarController: any MenuBarControlling
+    private let settingsOpener: any SettingsOpening
     private let isRunningXCTest: @MainActor () -> Bool
     private let currentAppleEventSenderPID: @MainActor () -> pid_t?
     private var urlRouter: URLRouter?
@@ -26,12 +32,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         urlRouter: URLRouter?,
         sourceAppDetector: (any SourceAppDetector)? = nil,
         menuBarController: any MenuBarControlling = MenuBarController(),
+        settingsOpener: any SettingsOpening = SettingsOpenRequestCenter.shared,
         currentAppleEventSenderPID: @escaping @MainActor () -> pid_t? = AppDelegate.currentAppleEventSenderPID,
         isRunningXCTest: @escaping @MainActor () -> Bool = AppRuntime.isRunningXCTest
     ) {
         self.urlRouter = urlRouter
         self.sourceAppDetector = sourceAppDetector
         self.menuBarController = menuBarController
+        self.settingsOpener = settingsOpener
         self.currentAppleEventSenderPID = currentAppleEventSenderPID
         self.isRunningXCTest = isRunningXCTest
         super.init()
@@ -51,6 +59,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if !self.isRunningXCTest() {
             self.menuBarController.start()
         }
+    }
+
+    func applicationShouldHandleReopen(_: NSApplication, hasVisibleWindows _: Bool) -> Bool {
+        self.settingsOpener.openSettings()
+        return false
     }
 
     func application(_: NSApplication, open urls: [URL]) {

@@ -36,6 +36,24 @@ struct AppDelegateRoutingTests {
         #expect(menuBarController.startCallCount == 0)
     }
 
+    @Test("reopening the running app opens Settings and suppresses the default window")
+    func reopeningRunningAppOpensSettings() {
+        let components = makeRouter()
+        let settingsOpener = SpySettingsOpener()
+        let delegate = AppDelegate(
+            urlRouter: components.router,
+            settingsOpener: settingsOpener
+        )
+
+        let shouldHandleDefaultReopen = delegate.applicationShouldHandleReopen(
+            NSApplication.shared,
+            hasVisibleWindows: false
+        )
+
+        #expect(settingsOpener.openSettingsCallCount == 1)
+        #expect(shouldHandleDefaultReopen == false)
+    }
+
     @Test("application(_:open:) routes URLs to URLRouter")
     func routesURLsToRouter() async throws {
         let components = makeRouter(
@@ -113,5 +131,13 @@ private final class SpyMenuBarController: MenuBarControlling {
 
     func start() {
         self.startCallCount += 1
+    }
+}
+
+private final class SpySettingsOpener: SettingsOpening {
+    private(set) var openSettingsCallCount = 0
+
+    func openSettings() {
+        self.openSettingsCallCount += 1
     }
 }
