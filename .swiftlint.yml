@@ -1,0 +1,40 @@
+included:
+  - Portal
+  - PortalTests
+
+opt_in_rules:
+  - force_unwrapping
+  - explicit_init
+  - sorted_imports
+  - override_in_extension
+  - unavailable_function
+
+analyzer_rules:
+  - unused_import
+
+file_length:
+  warning: 250
+  error: 300
+
+type_body_length:
+  error: 200
+
+function_body_length:
+  error: 50
+
+cyclomatic_complexity:
+  error: 10
+
+line_length:
+  warning: 120
+  error: 150
+  ignores_urls: true
+
+force_unwrapping:
+  severity: error
+
+force_cast: error
+force_try: error
+
+trailing_comma:
+  mandatory_comma: true

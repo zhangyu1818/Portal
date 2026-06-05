@@ -1,0 +1,25 @@
+# Xcode
+xcuserdata/
+*.xcuserstate
+.xccheckout
+*.xcscmblueprint
+DerivedData/
+build/
+
+# IDE / Claude session
+.agents/
+.claude/
+.cursor/
+.vscode/
+.zed/
+*.swp
+
+# Claude Code skill metadata
+skills-lock.json
+
+# macOS
+.DS_Store
+
+# Swift Package Manager
+.build/
+.swiftpm/
