@@ -86,4 +86,28 @@ struct URLRouterFallbackTests {
         #expect(presentations == [url])
         #expect(calls.isEmpty)
     }
+
+    @Test("fallback browser not found during launch refreshes registry and presents picker")
+    func fallbackBrowserNotFoundDuringLaunchRefreshesRegistryAndPresentsPicker() async throws {
+        let safari = self.makeSafari()
+        let url = try #require(URL(string: "https://example.com"))
+
+        let components = makeRouter(
+            ruleMatch: .noMatch,
+            browsers: [safari],
+            loopGuardAllow: true,
+            pickerChoice: nil,
+            launchError: BrowserLauncherError.browserNotFound(bundleIdentifier: safari.bundleIdentifier),
+            fallbackBrowserBundleID: safari.bundleIdentifier
+        )
+
+        await components.router.route([url])
+
+        let presentations = await components.picker.presentedURLs
+        let calls = await components.launcher.recordedCalls
+        let refreshCallCount = await components.registry.refreshCallCount
+        #expect(presentations == [url])
+        #expect(calls.isEmpty)
+        #expect(refreshCallCount == 1)
+    }
 }

@@ -73,6 +73,7 @@ actor MockPickerCoordinator: PickerCoordinator {
 struct RouterComponents {
     let router: URLRouter
     let launcher: MockBrowserLauncher
+    let registry: MockBrowserRegistry
     let picker: MockPickerCoordinator
     let ruleStore: MockRuleStore
 }
@@ -107,5 +108,11 @@ func makeRouter(
         pickerCoordinator: picker,
         fallbackPreferenceStore: MockFallbackBrowserPreferenceStore(bundleID: fallbackBrowserBundleID)
     )
-    return RouterComponents(router: router, launcher: launcher, picker: picker, ruleStore: ruleStore)
+    return RouterComponents(
+        router: router,
+        launcher: launcher,
+        registry: registry,
+        picker: picker,
+        ruleStore: ruleStore
+    )
 }

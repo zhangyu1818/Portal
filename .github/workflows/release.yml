@@ -195,6 +195,33 @@ jobs:
             printf 'DMG_PATH=%s\n' "$DMG_PATH"
           } >> "$GITHUB_ENV"
 
+      - name: Validate release metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG_VERSION="${RELEASE_TAG#v}"
+          if [[ "$APP_VERSION" != "$TAG_VERSION" ]]; then
+            printf '::error title=Version mismatch::tag %s does not match app version %s\n' "$RELEASE_TAG" "$APP_VERSION"
+            exit 67
+          fi
+          if ! [[ "$APP_BUILD_NUMBER" =~ ^[0-9]+$ ]]; then
+            printf '::error title=Invalid build number::CFBundleVersion must be numeric for Sparkle updates: %s\n' "$APP_BUILD_NUMBER"
+            exit 68
+          fi
+          PREVIOUS_TAG="$(gh release list --exclude-drafts --exclude-pre-releases --limit 20 --json tagName,createdAt --jq '[.[] | select(.tagName != env.RELEASE_TAG)] | sort_by(.createdAt) | reverse | .[0].tagName // ""')"
+          if [[ -n "$PREVIOUS_TAG" ]]; then
+            PREVIOUS_DIR="$RUNNER_TEMP/previous-release"
+            mkdir -p "$PREVIOUS_DIR"
+            if gh release download "$PREVIOUS_TAG" --pattern appcast.xml --dir "$PREVIOUS_DIR"; then
+              PREVIOUS_BUILD_NUMBER="$(xmllint --xpath 'string(/*[local-name()="rss"]/*[local-name()="channel"]/*[local-name()="item"][1]/*[local-name()="version" and namespace-uri()="http://www.andymatuschak.org/xml-namespaces/sparkle"])' "$PREVIOUS_DIR/appcast.xml" 2>/dev/null || true)"
+              if [[ "$PREVIOUS_BUILD_NUMBER" =~ ^[0-9]+$ ]] && (( APP_BUILD_NUMBER <= PREVIOUS_BUILD_NUMBER )); then
+                printf '::error title=Build number not incremented::CFBundleVersion %s must be greater than previous release %s build %s\n' "$APP_BUILD_NUMBER" "$PREVIOUS_TAG" "$PREVIOUS_BUILD_NUMBER"
+                exit 69
+              fi
+            fi
+          fi
+
       - name: Verify exported app signature
         run: |
           set -euo pipefail

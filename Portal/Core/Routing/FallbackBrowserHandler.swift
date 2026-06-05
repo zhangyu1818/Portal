@@ -37,6 +37,10 @@ struct FallbackBrowserHandler {
             #if DEBUG
                 print("[URLRouter] Launch failed for host \(url.host() ?? "<no host>"): \(error)")
             #endif
+            if self.isBrowserNotFound(error) {
+                await self.browserRegistry.refresh()
+                return false
+            }
         }
         return true
     }
@@ -86,5 +90,13 @@ struct FallbackBrowserHandler {
             fields.append(("error", String(describing: error)))
         }
         PortalDebugLog.route("router.launch", fields)
+    }
+
+    private func isBrowserNotFound(_ error: any Error) -> Bool {
+        guard let launcherError = error as? BrowserLauncherError else { return false }
+        if case .browserNotFound = launcherError {
+            return true
+        }
+        return false
     }
 }
