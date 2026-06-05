@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		AA0000101FAB1001001B1001 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000104FAB1004001B1004 /* LaunchAtLogin */; };
 		AA0000102FAB1002001B1002 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000105FAB1005001B1005 /* LaunchAtLogin */; };
+		AA0000201FAB2001001B2001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000203FAB2003001B2003 /* Sparkle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +46,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA0000101FAB1001001B1001 /* LaunchAtLogin in Frameworks */,
+				AA0000201FAB2001001B2001 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,6 +102,7 @@
 			name = Portal;
 			packageProductDependencies = (
 				AA0000104FAB1004001B1004 /* LaunchAtLogin */,
+				AA0000203FAB2003001B2003 /* Sparkle */,
 			);
 			productName = Portal;
 			productReference = 9AEA8E1D2FAB525C001B5CFE /* Portal.app */;
@@ -159,6 +162,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				AA0000103FAB1003001B1003 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */,
+				AA0000202FAB2002001B2002 /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9AEA8E1E2FAB525C001B5CFE /* Products */;
@@ -542,6 +546,14 @@
 				minimumVersion = 1.1.0;
 			};
 		};
+		AA0000202FAB2002001B2002 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -554,6 +566,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AA0000103FAB1003001B1003 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */;
 			productName = LaunchAtLogin;
+		};
+		AA0000203FAB2003001B2003 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA0000202FAB2002001B2002 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -6,15 +6,19 @@ import SwiftUI
 final class MenuBarController: NSObject, NSMenuDelegate {
     private let defaults: UserDefaults
     private let defaultBrowserService: any DefaultBrowserService
+    private let softwareUpdateMenuProvider: (any SoftwareUpdateMenuProviding)?
     private var statusItem: NSStatusItem?
     private var isObservingDefaults = false
 
     init(
         defaults: UserDefaults = .standard,
-        defaultBrowserService: any DefaultBrowserService = makeDefaultBrowserService()
+        defaultBrowserService: any DefaultBrowserService = makeDefaultBrowserService(),
+        softwareUpdateMenuProvider: (any SoftwareUpdateMenuProviding)? = SparkleSoftwareUpdateMenuProvider
+            .makeConfigured()
     ) {
         self.defaults = defaults
         self.defaultBrowserService = defaultBrowserService
+        self.softwareUpdateMenuProvider = softwareUpdateMenuProvider
         super.init()
     }
 
@@ -76,8 +80,30 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         let menu = NSHostingMenu(rootView: MenuBarMenuView(defaultBrowserService: self.defaultBrowserService) {
             NSApp.terminate(nil)
         })
+        self.insertSoftwareUpdateItemIfNeeded(in: menu)
         menu.delegate = self
         return menu
+    }
+
+    private func insertSoftwareUpdateItemIfNeeded(in menu: NSMenu) {
+        guard let updateItem = self.softwareUpdateMenuProvider?.makeSoftwareUpdateMenuItem() else {
+            return
+        }
+
+        if let quitIndex = menu.items.firstIndex(where: { $0.title == "Quit Portal" }) {
+            let insertionIndex = self.updateItemInsertionIndex(in: menu, beforeQuitAt: quitIndex)
+            menu.insertItem(updateItem, at: insertionIndex)
+        } else {
+            menu.addItem(updateItem)
+        }
+    }
+
+    private func updateItemInsertionIndex(in menu: NSMenu, beforeQuitAt quitIndex: Int) -> Int {
+        let separatorIndex = quitIndex - 1
+        if separatorIndex >= 0, menu.items[separatorIndex].isSeparatorItem {
+            return separatorIndex
+        }
+        return quitIndex
     }
 
     func menuWillOpen(_: NSMenu) {
