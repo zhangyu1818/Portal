@@ -107,6 +107,11 @@ jobs:
             printf 'ASC_KEY_PATH=%s\n' "$ASC_KEY_PATH"
           } >> "$GITHUB_ENV"
 
+      - name: Install build tools
+        run: |
+          set -euo pipefail
+          brew install swiftformat swiftlint
+
       - name: Build tests
         run: |
           set -euo pipefail
